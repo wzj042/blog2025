@@ -5,19 +5,19 @@
 
 :root,
 html[data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
+  --background: #EFF6EE;
+  --foreground: #172117;
+  --accent: #4CA249;
   --muted: #e6e6e6;
-  --border: #ece9e9;
+  --border: #CCDCCA;
 }
 
 html[data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
+  --background: #1F0D13;
+  --foreground: #D7CACD;
+  --accent: #A0576F;
   --muted: #343f60;
-  --border: #ab4b08;
+  --border: #462B33;
 }
 
 @theme inline {
@@ -38,7 +38,7 @@ html[data-theme="dark"] {
     @apply overflow-y-scroll scroll-smooth;
   }
   body {
-    @apply flex min-h-svh flex-col bg-background font-mono text-foreground selection:bg-accent/75 selection:text-background;
+    @apply flex min-h-svh flex-col bg-background font-sans text-foreground selection:bg-accent/75 selection:text-background;
   }
   a,
   button {

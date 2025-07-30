@@ -2,7 +2,6 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import IconCalendar from "@/assets/icons/IconCalendar.svg";
 import { SITE } from "@/config";
 
 dayjs.extend(utc);
@@ -14,6 +13,7 @@ export interface Props {
   timezone: string | undefined;
   pubDatetime: string | Date;
   modDatetime: string | Date | undefined | null;
+  showPub?: boolean;
 }
 
 const {
@@ -22,34 +22,34 @@ const {
   size = "sm",
   class: className = "",
   timezone: postTimezone,
+  showPub = false,
 } = Astro.props;
 
 /* ========== Formatted Datetime ========== */
 const isModified = modDatetime && modDatetime > pubDatetime;
 
-const datetime = dayjs(isModified ? modDatetime : pubDatetime).tz(
-  postTimezone || SITE.timezone
-);
+const pubDate = dayjs(pubDatetime)
+  .tz(postTimezone || SITE.timezone)
+  .format("YYYY-MM-DD"); // e.g., '22 Mar, 2025'
 
-const date = datetime.format("D MMM, YYYY"); // e.g., '22 Mar, 2025'
+const modDate = modDatetime && modDatetime > pubDatetime
+    ? dayjs(modDatetime)
+        .tz(postTimezone || SITE.timezone)
+        .format("YYYY-MM-DD")
+    : pubDate;
+
 ---
 
-<div class:list={["flex items-center gap-x-2 opacity-80", className]}>
-  <IconCalendar
-    class:list={[
-      "inline-block size-6 min-w-[1.375rem]",
-      { "scale-90": size === "sm" },
-    ]}
-  />
+<div class:list={["flex items-center gap-x-2 opacity-60 overflow-hidden whitespace-nowrap", className]}>
+  <time
+    class:list={["text-sm", { "sm:text-base": size === "lg" }]}
+    datetime={dayjs(modDatetime).toISOString()}>{modDate}
+  </time>
   {
-    isModified && (
+    showPub && isModified && (
       <span class:list={["text-sm", { "sm:text-base": size === "lg" }]}>
-        Updated:
+        | 发布于 {pubDate} 
       </span>
     )
   }
-  <time
-    class:list={["text-sm", { "sm:text-base": size === "lg" }]}
-    datetime={datetime.toISOString()}>{date}</time
-  >
 </div>

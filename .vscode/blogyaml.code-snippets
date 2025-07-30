@@ -1,0 +1,18 @@
+{
+	"Blog Front Matter": {
+		"scope": "markdown",
+		"prefix": "blogyaml",
+		"body": [
+			"---",
+			"title: \"${1:文章标题}\"",
+			"slug: ${2:your-slug}",
+			"pubDatetime: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE",
+			"category: ${3:分类}",
+			"tags:",
+			"  - ${4:tag1}",
+			"description: \"${5:这里写文章描述}\"",
+			"---"
+		],
+		"description": "为博客文章插入 YAML front matter"
+	}
+}

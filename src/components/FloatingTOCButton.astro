@@ -1,0 +1,156 @@
+---
+import TOC from "@/components/TOC.astro";
+
+export interface Props {
+  headings: any[];
+}
+
+const { headings } = Astro.props;
+---
+
+<!-- 浮动 TOC 按钮 - 仅在窄屏显示 -->
+<div class="floating-toc-button xl:hidden fixed top-6 right-6 z-50">
+  <!-- 固定按钮 -->
+  <button
+    id="toc-toggle-btn"
+    class="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full p-3 shadow-lg transition-all duration-200 hover:scale-105"
+    aria-label="打开目录"
+    title="打开目录"
+  >
+    <svg
+      class="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M4 6h16M4 12h16M4 18h16"
+      ></path>
+    </svg>
+  </button>
+
+  <!-- TOC 弹窗 -->
+  <div
+    id="toc-modal"
+    class="fixed top-20 right-6 w-80 max-h-96 bg-background border rounded-lg shadow-xl overflow-hidden z-40 hidden"
+    aria-hidden="true"
+  >
+      <!-- 弹窗头部 -->
+      <div class="flex items-center justify-between p-4 border-b">
+        <h3 class="text-sm font-semibold text-foreground">目录</h3>
+        <button
+          id="toc-close-btn"
+          class="text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="关闭目录"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- TOC 内容 -->
+      <div class="p-4 max-h-80 overflow-y-auto">
+        <TOC headings={headings} />
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initFloatingTOC() {
+    const toggleBtn = document.getElementById('toc-toggle-btn');
+    const modal = document.getElementById('toc-modal');
+    const closeBtn = document.getElementById('toc-close-btn');
+
+    if (!toggleBtn || !modal || !closeBtn) return;
+
+    // 打开 TOC
+    toggleBtn.addEventListener('click', () => {
+      modal.classList.remove('hidden');
+    });
+
+    // 关闭 TOC
+    const closeTOC = () => {
+      modal.classList.add('hidden');
+    };
+
+    closeBtn.addEventListener('click', closeTOC);
+
+    // ESC 键关闭
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        closeTOC();
+      }
+    });
+
+    // 点击 TOC 链接后关闭弹窗
+    const tocLinks = modal.querySelectorAll('.toc a[href^="#"]');
+    tocLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        // 延迟关闭，让滚动动画完成
+        setTimeout(closeTOC, 300);
+      });
+    });
+  }
+
+  // 页面加载时初始化
+  document.addEventListener('astro:page-load', initFloatingTOC);
+</script>
+
+<style>
+  .floating-toc-button {
+    /* 确保按钮在移动端有足够的点击区域 */
+    touch-action: manipulation;
+  }
+  
+  /* 弹窗动画 */
+  #toc-modal {
+    transition: all 0.2s ease-in-out;
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  
+  #toc-modal:not(.hidden) {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+  /* 确保 TOC 内容在弹窗中正确显示 */
+  #toc-modal .toc {
+    font-size: 0.875rem;
+  }
+  
+  #toc-modal .toc a {
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: inline-block;
+    width: 100%;
+  }
+  
+  #toc-modal .toc a:hover {
+    color: var(--color-accent);
+    background-color: var(--color-border);
+  }
+  
+  #toc-modal .toc a.active {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
+</style> 

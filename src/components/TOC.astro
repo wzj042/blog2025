@@ -1,0 +1,129 @@
+---
+const { headings } = Astro.props;
+
+// Determine whether the passed in array or single object
+const isHeadingsArray = Array.isArray(headings);
+let toc: any[] = [];
+let currentHeading = null;
+
+if (isHeadingsArray) {
+  const parentHeadings = new Map();
+  headings.forEach((h) => {
+    const headingObj = { ...h, subheadings: [] };
+    parentHeadings.set(headingObj.depth, headingObj);
+    // Change 2 to 1 if your markdown includes your <h1>
+    if (headingObj.depth === 2) {
+      toc.push(headingObj);
+    } else {
+      parentHeadings.get(headingObj.depth - 1).subheadings.push(headingObj);
+    }
+  });
+} else {
+  // single heading
+  currentHeading = headings;
+}
+---
+
+{isHeadingsArray ? (
+  <!-- Root component: renders the entire TOC -->
+  <nav class="toc">
+    <ul>
+      {toc.map((h) => (
+        <Astro.self headings={h} />
+      ))}
+    </ul>
+  </nav>
+) : (
+  <!-- Recursive component: rendering a single heading -->
+  <li>
+    <a href={'#' + currentHeading.slug}>
+      {currentHeading.text}
+    </a>
+    {currentHeading.subheadings.length > 0 && (
+      <ul class="ml-4">
+        {currentHeading.subheadings.map((subheading: any) => (
+          <Astro.self headings={subheading} />
+        ))}
+      </ul>
+    )}
+  </li>
+)}
+
+<script>
+  // Define a variable to store the cleanup function of the current page
+  let cleanup: () => void;
+
+  function initTOCHighlight() {
+    // Before running, execute the cleanup function of the previous page (if it exists)
+    if (cleanup) {
+      cleanup();
+    }
+
+    const tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+    const tocLinksMap = new Map();
+    tocLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href) {
+        const id = href.slice(1);
+        if (!tocLinksMap.has(id)) {
+          tocLinksMap.set(id, []);
+        }
+        tocLinksMap.get(id).push(link);
+      }
+    });
+
+    const headings = Array.from(document.querySelectorAll('h2, h3, h4, h5, h6'))
+      .filter(h => h.id && tocLinksMap.has(h.id));
+
+    if (headings.length === 0 || tocLinksMap.size === 0) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = entry.target.id;
+        const links = tocLinksMap.get(id);
+
+        if (entry.isIntersecting && entry.intersectionRatio >= 1) {
+          // Remove active class from all TOC links
+          tocLinks.forEach((link: Element) => link.classList.remove('active'));
+          
+          // Add active class to all matching links (both desktop and mobile TOC)
+          if (links && links.length > 0) {
+            links.forEach((link: Element) => link.classList.add('active'));
+          }
+        }
+      });
+    }, {
+      rootMargin: '-100px 0px -50% 0px',
+      threshold: 1.0,
+    });
+
+    headings.forEach(heading => observer.observe(heading));
+
+    // Assign the cleanup logic of the current page to the cleanup variable
+    // When the next page loads, this function will be called
+    cleanup = () => {
+      console.log('Cleaning up observers for the previous page.');
+      headings.forEach(heading => observer.unobserve(heading));
+    };
+  }
+
+  // Listening for the astro:page-load event
+  document.addEventListener('astro:page-load', initTOCHighlight, { once: false });
+</script>
+
+<style>
+  .toc a {
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: inline-block;
+  }
+  
+  .toc a:hover {
+    color: var(--color-accent);
+  }
+  
+  .toc a.active {
+    background-color: var(--color-border);
+  }
+</style>

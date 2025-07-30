@@ -5,6 +5,16 @@
   .app-prose {
     @apply prose;
 
+    /* Katex text color */
+    .katex-display {
+      @apply text-foreground;
+    }
+    blockquote {
+      @apply not-italic break-words;
+      quotes: none !important;
+    }
+
+
     h1,
     h2,
     h3,

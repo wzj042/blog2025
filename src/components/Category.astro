@@ -1,0 +1,33 @@
+---
+export interface Props {
+  category: string;
+  categoryName: string;
+  count?: number;
+  size?: "sm" | "lg";
+}
+
+const { category, categoryName, count, size = "sm" } = Astro.props;
+---
+
+<li
+  class:list={[
+    "group inline-block group-hover:cursor-pointer",
+    size === "sm" ? "my-1 underline-offset-4" : "mx-1 my-3 underline-offset-8",
+  ]}
+>
+  <a
+    href={`/categories/${category}/`}
+    transition:name={category}
+    class:list={[
+      "relative pr-2 text-lg underline decoration-dashed group-hover:-top-0.5 group-hover:text-accent focus-visible:p-1",
+      { "text-sm": size === "sm" },
+    ]}
+  >
+    <span>{categoryName}</span>
+    {
+      typeof count === "number" && (
+        <span class="ml-1 align-top text-sm text-foreground">({count})</span>
+      )
+    }
+  </a>
+</li>

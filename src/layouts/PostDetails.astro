@@ -4,9 +4,11 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Tag from "@/components/Tag.astro";
+import Category from "@/components/Category.astro";
+import TOC from "@/components/TOC.astro";
+import FloatingTOCButton from "@/components/FloatingTOCButton.astro";
 import Datetime from "@/components/Datetime.astro";
 import EditPost from "@/components/EditPost.astro";
-import ShareLinks from "@/components/ShareLinks.astro";
 import BackButton from "@/components/BackButton.astro";
 import BackToTopButton from "@/components/BackToTopButton.astro";
 import { getPath } from "@/utils/getPath";
@@ -32,10 +34,15 @@ const {
   modDatetime,
   timezone,
   tags,
+  category,
   hideEditPost,
 } = post.data;
 
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+
+const hasSubHeadings = Array.isArray(headings)
+  ? headings.some(h => h.depth > 1)
+  : false;
 
 let ogImageUrl: string | undefined;
 
@@ -85,6 +92,25 @@ const nextPost =
 <Layout {...layoutProps}>
   <Header />
   <BackButton />
+
+  <!-- 桌面端贴边 TOC -->
+  {hasSubHeadings && (
+    <div class="toc-desktop hidden xl:block fixed top-24 right-8 w-64 max-h-[calc(100vh-8rem)] overflow-y-auto z-10">
+      <div class="bg-background border rounded-md p-4">
+        <h3 class="text-sm font-semibold text-foreground mb-2 pb-2 border-b">
+          Table of Contents
+        </h3>
+        <div class="text-sm">
+          <TOC headings={headings} />
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- 移动端浮动 TOC 按钮 -->
+  {hasSubHeadings && <FloatingTOCButton headings={headings} />}
+
+
   <main
     id="main-content"
     class:list={[
@@ -95,12 +121,29 @@ const nextPost =
   >
     <h1
       transition:name={slugifyStr(title)}
-      class="inline-block text-2xl font-bold text-accent sm:text-3xl"
+      class="inline-block w-full text-2xl font-bold text-accent sm:text-3xl text-center"
     >
       {title}
     </h1>
-    <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+    <div
+        class="w-full sm:mt-0 sm:ml-0 sm:flex sm:w-auto sm:items-center sm:justify-center"
+      >
+        <ul class="flex flex-wrap gap-2 sm:w-auto sm:justify-center">
+          {
+            category && (
+              <Category
+                category={slugifyStr(category)}
+                categoryName={category}
+              />
+            )
+          }
+          </ul>
+        </div>
+    <ul class="my-2 flex justify-center gap-2">
+      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} />)}
+    </ul>
+    <div class="my-2 flex justify-center gap-2">
+      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" showPub={true} />
       <span
         aria-hidden="true"
         class:list={[
@@ -109,6 +152,7 @@ const nextPost =
         ]}>|</span
       >
       <EditPost {hideEditPost} {post} class="max-sm:hidden" />
+      
     </div>
     <article
       id="article"
@@ -121,13 +165,9 @@ const nextPost =
 
     <EditPost class="sm:hidden" {hideEditPost} {post} />
 
-    <ul class="mt-4 mb-8 sm:my-8">
-      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} />)}
-    </ul>
 
     <BackToTopButton />
 
-    <ShareLinks />
 
     <hr class="my-6 border-dashed" />
 
@@ -162,6 +202,21 @@ const nextPost =
         )
       }
     </div>
+    <script src="https://giscus.app/client.js"
+        data-repo="wzj042/blog2025"
+        data-repo-id="R_kgDOPUlgOA"
+        data-category="General"
+        data-category-id="DIC_kwDOPUlgOM4CtlzR"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
   </main>
   <Footer />
 </Layout>
