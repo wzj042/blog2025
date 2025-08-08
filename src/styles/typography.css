@@ -10,7 +10,7 @@
       @apply text-foreground;
     }
     blockquote {
-      @apply not-italic break-words;
+      @apply not-italic break-words border-s-accent/80 break-words opacity-50 ;
       quotes: none !important;
     }
 
@@ -84,9 +84,6 @@
       @apply flex-[1_0_100%] bg-inherit p-0;
     }
 
-    blockquote {
-      @apply border-s-accent/80 break-words opacity-80;
-    }
 
     details {
       @apply inline-block cursor-pointer text-foreground select-none [&_p]:hidden [&_ul]:!my-0;
