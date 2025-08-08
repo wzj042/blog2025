@@ -12,6 +12,7 @@ import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import { rehypeImageFigure } from "./src/utils/rehypeImageFigure";
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,7 +25,7 @@ export default defineConfig({
       remarkMath,
       remarkToc,
     ],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [rehypeKatex, rehypeImageFigure],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "night-owl" },
