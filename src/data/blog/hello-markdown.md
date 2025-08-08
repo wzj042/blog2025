@@ -65,9 +65,9 @@ A full-width table:
 
 An image:
 
-<div align=center><img src="/src/assets/images/payload.jpg" width=20px alt="hello"></div>
+<div align=center><img src="../../assets/images/payload.jpg" width=20px alt="hello"></div>
 
-![payload](/src/assets/images/payload.jpg)
+![payload](../../assets/images/payload.jpg)
 
 Display math (render by MathJax):
 

@@ -3,7 +3,7 @@ author: wzj042
 pubDatetime: 2025-07-30T10:40:08Z
 modDatetime: 2025-07-30T18:59:05Z
 title: 改为使用 Astro 发布内容
-description: ""
+description: "等有空/意愿时再完善中……"
 ---
 
 > 翻阅了大部分博客后，选择抄 [Velari](https://github.com/LoganQiu/Velari) 的方案。
