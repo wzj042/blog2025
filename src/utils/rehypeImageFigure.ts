@@ -1,22 +1,20 @@
-import type { Plugin } from 'unified';
-
 /**
  * Rehype plugin to wrap images with title attributes in figure elements
  */
-export const rehypeImageFigure: Plugin = () => {
+export const rehypeImageFigure = () => {
   return (tree: any) => {
     const visit = (node: any) => {
       if (node.type === 'element' && node.tagName === 'img' && node.properties?.title) {
         // Create figure element
-        const figure = {
+        const figure: any = {
           type: 'element',
           tagName: 'figure',
           properties: {},
-          children: []
+          children: [] as any[]
         };
 
         // Create figcaption element
-        const figcaption = {
+        const figcaption: any = {
           type: 'element',
           tagName: 'figcaption',
           properties: {},
@@ -27,7 +25,7 @@ export const rehypeImageFigure: Plugin = () => {
         };
 
         // Remove title from img and add to figure
-        const imgWithoutTitle = {
+        const imgWithoutTitle: any = {
           ...node,
           properties: {
             ...node.properties,
