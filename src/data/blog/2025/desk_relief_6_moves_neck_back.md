@@ -2,7 +2,7 @@
 author: wzj042
 pubDatetime: 2025-08-08
 modDatetime: 2025-08-08
-title: 打工人久坐一分半六个放松动作
+title: 一分半六个久坐放松动作
 description: "快速缓解颈腰椎压力"
 ---
 
